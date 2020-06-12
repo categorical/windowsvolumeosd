@@ -1,0 +1,11 @@
+#/bin/bash
+
+bindir='/cygdrive/d/dev/bin'
+thisdir=$(cd "$(dirname BASH_SOURCE[0])" && pwd)
+appname='windowsvolumeosd'
+executable=$thisdir/build/install/$appname/bin/$appname
+
+
+gradle installDist
+ln -sf "$executable" "$bindir"
+

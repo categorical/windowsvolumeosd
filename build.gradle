@@ -1,0 +1,48 @@
+
+
+apply plugin: 'java'
+
+jar{
+    manifest{
+	    attributes 'Main-Class':'windowsvolumeosd.Main'
+    }
+    
+    // Creates a fat jar including dependencies in build/libs,
+    // but `gradle distZip` packs fat jar together with dependency jars.
+    /*    
+    from{
+	    configurations.runtimeClasspath.collect{ it.isDirectory()?it:zipTree(it)}
+    }
+    */
+}
+
+
+apply plugin: 'application'
+mainClassName='windowsvolumeosd.Main'
+
+repositories{
+    mavenCentral()
+}
+
+apply(['from':'rubbish.gradle'])
+dependencies({
+    it.add('compile','net.java.dev.jna:jna-platform:5.5.0')
+    it.add('compile','commons-cli:commons-cli:1.4')
+    //Gradlers can type this in many different ways, how amazing.
+    //compile 'commons-cli:commons-cli:1.4'
+    //it.compile('commons-cli:commons-cli:1.4')
+})
+
+distributions.main({
+    baseName='windowsvolumeosd'
+})
+
+tasks.create(
+    'why',    
+    {
+        //printps(distributions.main)
+    }
+)
+
+
+

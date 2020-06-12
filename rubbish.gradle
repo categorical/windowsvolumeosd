@@ -1,0 +1,6 @@
+
+ext.printps={o->o.properties.each{printf("%-20s: %s\n",it.key,it.value)}}                                               
+ext.printms={o->o.metaClass.methods.name.unique().each{println(it)}}                                                  
+
+
+
