@@ -6,6 +6,6 @@ appname='windowsvolumeosd'
 executable=$thisdir/build/install/$appname/bin/$appname
 
 
-gradle installDist
-ln -sf "$executable" "$bindir"
+gradle installDist \
+&& ln -sf "$executable" "$bindir"
 

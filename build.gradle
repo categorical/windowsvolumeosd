@@ -9,7 +9,7 @@ jar{
     
     // Creates a fat jar including dependencies in build/libs,
     // but `gradle distZip` packs fat jar together with dependency jars.
-    /*    
+    /*     
     from{
 	    configurations.runtimeClasspath.collect{ it.isDirectory()?it:zipTree(it)}
     }

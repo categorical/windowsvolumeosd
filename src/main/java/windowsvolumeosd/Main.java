@@ -1,6 +1,8 @@
 
-package windowsvolumeosd;
 
+
+package windowsvolumeosd;
+import javax.swing.SwingUtilities;
 
 
 public class Main {
@@ -8,20 +10,37 @@ public class Main {
     public static void main(String[] args) throws InterruptedException{
 
 	Parseargs.parse(args);
-	int i=3;
-	//LogUtil.info("kill"+Parseargs.kill);
-	//LogUtil.info("hide"+Parseargs.hide);
-	Thread t=new Thread(new Runnable(){
-		@Override
-		public void run(){
-		    VolumeOSD v=VolumeOSD.getinstance();
-		    v.printhandle();
-		    LogUtil.info("show"+Parseargs.show);
-		    LogUtil.info("non final inter:"+i);
-		}
-	    });
-	t.start();
-
-   
+	
+	if(Parseargs.gui){
+	    SwingUtilities.invokeLater(new Runnable(){
+		    public void run(){
+			GUI v=new GUI();
+			Thread t=new Thread(new Runnable(){
+				public void run(){
+				    VolumeOSD m=VolumeOSD.getinstance();
+				    m.setgui(v);
+				}
+			    });t.start();		     
+		    }
+		});
+	}else{
+	    VolumeOSD m=VolumeOSD.getinstance();
+	    if(Parseargs.hide){
+		m.hide();
+	    }else if(Parseargs.show){
+		m.show();
+	    }else if(Parseargs.kill){
+		m.kill();
+	    }
+	}
     }
+
+    private static void printedt(){
+	LogUtil.info("iseventdispatchthread: %s",SwingUtilities.isEventDispatchThread());
+	try{
+	    Thread.sleep(3000);
+	}catch(InterruptedException e){
+	}
+    }
+
 }

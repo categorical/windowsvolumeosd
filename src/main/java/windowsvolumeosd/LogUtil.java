@@ -1,4 +1,5 @@
 
+
 package windowsvolumeosd;
 
 
@@ -14,6 +15,9 @@ public class LogUtil{
 
     public static void info(String msg){
 	l.info(msg);
+    }
+    public static void info(String f,Object... args){
+	info(String.format(f,args));
     }
     public static void warning(String msg){
 	l.log(Level.WARNING,msg);

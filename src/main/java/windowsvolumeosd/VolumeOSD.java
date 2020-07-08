@@ -4,12 +4,16 @@ package windowsvolumeosd;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.Win32VK;
 
+import java.io.IOException;
+
 public class VolumeOSD{
 
     private static VolumeOSD instance=null;
     private WinDef.HWND handleosd;
     private static final String osdwindowclassname="NativeHWNDHost";
     private static final String osdchildwindowclassname="DirectUIHWND";
+    private GUI v;
+    private String texthandlenotfound="OSD Window not found.";
     
     public static VolumeOSD getinstance(){
 	if(instance==null)
@@ -22,13 +26,30 @@ public class VolumeOSD{
     }
 
     private void initialise(){
-	this.ensureexists();
-	this.handleosd=gethandleosd();
-	if(this.handleosd==null){
-	    throw new RuntimeException("OSD Window not found.");
-	}	
+	updatehandleosd();
+    }
+    
+    public void setgui(GUI v){
+	v.setvolumeosd(this);
+	this.v=v;
+	this.guichange("volumeosdinitialised",null);
+	guiupdatehandleosd();
+    }
+    private void guiupdatehandleosd(){
+	this.guichange("handleosd",stringhandleosd());
+    }
+    
+    public void updatehandleosd(){
+	ensureexists();
+	handleosd=gethandleosd();
+	guiupdatehandleosd();
     }
 
+    private void guichange(String k,Object v){
+	if(this.v!=null)
+	    this.v.onchange(k,v);
+    }
+      
     private WinDef.HWND gethandleosd(){
 	WinDef.HWND osd=null;
 	int i=0;
@@ -59,30 +80,47 @@ public class VolumeOSD{
 	return osd;
     }
 
-
+    public void bringforth(){
+	show();
+	ensureexists();
+    }
     private void ensureexists(){
 	KeyboardCtrl.sendKeycode(Win32VK.VK_VOLUME_UP);
 	KeyboardCtrl.sendKeycode(Win32VK.VK_VOLUME_DOWN);
     }
     
-    
-    public void printhandle(){
-	LogUtil.info(String.format("osd window handle hex: %s",
-			     this.handleosd==null?null:WndCtrl.toHex(this.handleosd)));
-	LogUtil.info(String.format("osd window name: %s",
-			     this.handleosd==null?null:WndCtrl.getName(this.handleosd)));
-    }
 
+    private String stringhandleosd(){
+	return this.handleosd==null
+	    ?texthandlenotfound
+	    :String.format("0x%s",WndCtrl.toHex(this.handleosd));
+    }
+    public void printhandle(){
+	LogUtil.info("osd window handle hex: %s",stringhandleosd());
+    }
+    
 
     public void show(){
-	WndCtrl.restorewindow(this.handleosd);
+	if(this.handleosd!=null)WndCtrl.restorewindow(this.handleosd);
     }
     public void hide(){
-	WndCtrl.minimisewindow(this.handleosd);
+	if(this.handleosd!=null)WndCtrl.minimisewindow(this.handleosd);
     }
     
     public void kill(){
-	WndCtrl.killwindow(this.handleosd);
+	if(this.handleosd!=null)WndCtrl.killwindow(this.handleosd);
+    }
+
+    public void restartexplorer(){
+	Runtime r=Runtime.getRuntime();
+	int rv;
+	try{
+	    rv=r.exec("taskkill /f /im explorer.exe").waitFor();
+	    if(rv==0)
+		rv=r.exec(new String[]{"cmd.exe","/c","start \"\" explorer.exe"}).waitFor();
+	}catch(IOException|InterruptedException e){
+	    LogUtil.warning(e.toString());
+	}
     }
 
 }

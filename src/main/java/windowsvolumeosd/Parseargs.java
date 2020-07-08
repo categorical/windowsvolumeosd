@@ -16,6 +16,8 @@ public class Parseargs{
     static boolean show;
     static boolean hide;
     static boolean kill;
+    static boolean gui;
+    static boolean explorer;
     private static Options os=new Options();
     
     public static void parse(String[] args){
@@ -36,11 +38,17 @@ public class Parseargs{
 	    .hasArg(false)
 	    .longOpt("kill")
 	    .build();
+	Option o4=Option.builder()
+	    .required(false)
+	    .hasArg(false)
+	    .longOpt("gui")
+	    .build();
        
 	g.setRequired(true);
-	os.addOptionGroup(g.addOption(o1).addOption(o2).addOption(o3));
+	os.addOptionGroup(g.addOption(o1).addOption(o2).addOption(o3).addOption(o4));
 	CommandLine parsed=null;
 
+	if(args.length==0)args=new String[]{"--gui"};
 	try{
 	    parsed=p.parse(os,args);
 	}catch(ParseException e){
@@ -51,7 +59,7 @@ public class Parseargs{
 	if(parsed.hasOption("show"))show=true;
 	if(parsed.hasOption("hide"))hide=true;
 	if(parsed.hasOption("kill"))kill=true;
-	    
+	if(parsed.hasOption("gui"))gui=true;	    
 	    
 	
     }
