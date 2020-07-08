@@ -121,14 +121,14 @@ public class GUI {
     private JButton b3;
     
     private void initialisectrls(){
-	tb0=new JToggleButton("hide");tb0.setEnabled(false);
+	tb0=new JToggleButton("Hide");tb0.setEnabled(false);
 	tb0.addItemListener(new ItemListener(){
 		public void itemStateChanged(ItemEvent e){
 		    JToggleButton c=(JToggleButton)e.getSource();
 		    if(c.isSelected()){
-			m.hide();c.setText("show");
+			m.hide();c.setText("Show");
 		    }else{
-			m.show();c.setText("hide");
+			m.show();c.setText("Hide");
 		    }
 		}
 	    });
@@ -147,7 +147,11 @@ public class GUI {
 	b1=new JButton("Find OSD window");
 	b1.addActionListener(new ActionListener(){
 		public void actionPerformed(ActionEvent e){
-		    m.updatehandleosd();
+		    Thread t=new Thread(new Runnable(){
+			    public void run(){
+				m.updatehandleosd();
+			    }
+			});t.start();
 		}
 	    });
 	b2=new JButton("Bring forth");
